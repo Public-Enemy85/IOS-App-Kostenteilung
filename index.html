@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#111827" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Kosten" />
+  <link rel="apple-touch-icon" href="icons/icon-180.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>Kosten</title>
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>Kosten</h1>
+      <p>Ausgaben einfach erfassen</p>
+    </div>
+    <button id="installBtn" class="ghost hidden" type="button">Installieren</button>
+  </header>
+
+  <main class="app-shell">
+    <nav class="tabs" aria-label="Navigation">
+      <button class="tab active" data-view="entry">Eintragen</button>
+      <button class="tab" data-view="list">Ausgaben</button>
+      <button class="tab" data-view="report">Auswertung</button>
+      <button class="tab" data-view="settings">Daten</button>
+    </nav>
+
+    <section id="view-entry" class="view active">
+      <div class="card">
+        <div class="section-head">
+          <div>
+            <h2 id="formTitle">Neue Ausgabe</h2>
+            <p class="muted">Betrag, Beleg und Zuordnung speichern.</p>
+          </div>
+          <button id="cancelEditBtn" class="ghost hidden" type="button">Abbrechen</button>
+        </div>
+
+        <form id="expenseForm">
+          <input type="hidden" id="expenseId" />
+
+          <label for="amount">Betrag *</label>
+          <div class="amount-field">
+            <span>€</span>
+            <input id="amount" inputmode="decimal" autocomplete="off" placeholder="0,00" required />
+          </div>
+
+          <div class="grid-2">
+            <div>
+              <label for="date">Datum *</label>
+              <input id="date" type="date" required />
+            </div>
+            <div>
+              <label for="category">Kategorie *</label>
+              <input id="category" list="categoryList" placeholder="z. B. Tanken" required />
+              <datalist id="categoryList"></datalist>
+            </div>
+          </div>
+
+          <label for="paidBy">Bezahlt von *</label>
+          <input id="paidBy" list="payerList" placeholder="z. B. Phil, Firma, Kollege" required />
+          <datalist id="payerList"></datalist>
+          <p class="hint">Du kannst vorhandene Namen auswählen oder direkt einen neuen Namen eintragen.</p>
+
+          <label for="description">Beschreibung</label>
+          <textarea id="description" rows="3" placeholder="Was wurde gekauft / wofür war die Ausgabe?"></textarea>
+
+          <label for="receipt">Kassenzettel / Beleg</label>
+          <input id="receipt" type="file" accept="image/*" capture="environment" />
+          <div id="receiptPreviewWrap" class="receipt-preview hidden">
+            <img id="receiptPreview" alt="Belegvorschau" />
+            <button id="removeReceiptBtn" type="button" class="danger ghost">Beleg entfernen</button>
+          </div>
+
+          <button class="primary wide" type="submit" id="saveBtn">Ausgabe speichern</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="view-list" class="view">
+      <div class="card">
+        <div class="section-head">
+          <div>
+            <h2>Ausgaben</h2>
+            <p class="muted" id="listSummary">0 Einträge</p>
+          </div>
+        </div>
+        <div class="filters compact">
+          <input id="searchText" type="search" placeholder="Suchen …" />
+          <select id="listCategoryFilter"><option value="">Alle Kategorien</option></select>
+          <select id="listPayerFilter"><option value="">Alle Personen</option></select>
+        </div>
+        <div id="expenseList" class="expense-list"></div>
+      </div>
+    </section>
+
+    <section id="view-report" class="view">
+      <div class="card">
+        <h2>Auswertung</h2>
+        <div class="grid-2">
+          <div>
+            <label for="reportFrom">Von</label>
+            <input id="reportFrom" type="date" />
+          </div>
+          <div>
+            <label for="reportTo">Bis</label>
+            <input id="reportTo" type="date" />
+          </div>
+        </div>
+        <button id="thisMonthBtn" class="ghost" type="button">Diesen Monat</button>
+
+        <div class="total-box">
+          <span>Gesamtausgaben</span>
+          <strong id="reportTotal">0,00 €</strong>
+          <small id="reportCount">0 Einträge</small>
+        </div>
+
+        <div class="report-grid">
+          <div>
+            <h3>Nach Kategorie</h3>
+            <div id="categoryBreakdown" class="breakdown"></div>
+          </div>
+          <div>
+            <h3>Bezahlt von</h3>
+            <div id="payerBreakdown" class="breakdown"></div>
+          </div>
+        </div>
+
+        <div class="export-actions">
+          <button id="exportCsvBtn" type="button" class="primary">CSV exportieren / teilen</button>
+          <button id="exportPdfBtn" type="button" class="secondary">PDF exportieren / teilen</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-settings" class="view">
+      <div class="card">
+        <h2>Daten & Sicherung</h2>
+        <p class="muted">Alle Daten werden nur auf diesem Gerät im Browser gespeichert. Es gibt keine Cloud-Synchronisierung.</p>
+
+        <div class="notice">
+          <strong>Wichtig:</strong> Wenn Safari-Websitedaten gelöscht werden, können auch die gespeicherten Ausgaben verschwinden. Deshalb regelmäßig ein vollständiges Backup exportieren.
+        </div>
+
+        <div class="settings-actions">
+          <button id="backupBtn" type="button" class="primary">Vollständiges Backup erstellen</button>
+          <label class="file-button secondary">
+            Backup wiederherstellen
+            <input id="restoreInput" type="file" accept="application/json,.json" hidden />
+          </label>
+        </div>
+
+        <hr />
+        <h3>Eigene Kategorien</h3>
+        <div class="inline-add">
+          <input id="newCategory" placeholder="Neue Kategorie" />
+          <button id="addCategoryBtn" type="button" class="secondary">Hinzufügen</button>
+        </div>
+        <div id="categoryChips" class="chips"></div>
+
+        <h3>Personen / Bezahlt von</h3>
+        <div class="inline-add">
+          <input id="newPayer" placeholder="Name hinzufügen" />
+          <button id="addPayerBtn" type="button" class="secondary">Hinzufügen</button>
+        </div>
+        <div id="payerChips" class="chips"></div>
+
+        <hr />
+        <button id="deleteAllBtn" type="button" class="danger">Alle Daten löschen</button>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
