@@ -25,7 +25,7 @@
     <nav class="tabs" aria-label="Navigation">
       <button class="tab active" data-view="entry">Eintragen</button>
       <button class="tab" data-view="list">Ausgaben</button>
-      <button class="tab" data-view="report">Auswertung</button>
+      <button class="tab" data-view="report">Übersicht</button>
       <button class="tab" data-view="settings">Daten</button>
     </nav>
 
@@ -34,7 +34,7 @@
         <div class="section-head">
           <div>
             <h2 id="formTitle">Neue Ausgabe</h2>
-            <p class="muted">Betrag, Beleg und Zuordnung speichern.</p>
+            <p class="muted">Betrag, Zuordnung und optional einen Beleg speichern.</p>
           </div>
           <button id="cancelEditBtn" class="ghost hidden" type="button">Abbrechen</button>
         </div>
@@ -55,18 +55,37 @@
             </div>
             <div>
               <label for="category">Kategorie *</label>
-              <input id="category" list="categoryList" placeholder="z. B. Tanken" required />
-              <datalist id="categoryList"></datalist>
+              <select id="category" required>
+                <option value="">Bitte auswählen</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="newCategoryEntry" class="new-category-box hidden">
+            <label for="newCategoryInline">Neue Kategorie</label>
+            <div class="inline-add">
+              <input id="newCategoryInline" placeholder="z. B. Freizeit" />
+              <button id="saveCategoryInlineBtn" type="button" class="secondary">Speichern</button>
             </div>
           </div>
 
           <label for="paidBy">Bezahlt von *</label>
-          <input id="paidBy" list="payerList" placeholder="z. B. Phil, Firma, Kollege" required />
-          <datalist id="payerList"></datalist>
-          <p class="hint">Du kannst vorhandene Namen auswählen oder direkt einen neuen Namen eintragen.</p>
+          <select id="paidBy" required>
+            <option value="">Bitte auswählen</option>
+            <option value="Sebastian">Sebastian</option>
+            <option value="Sandra">Sandra</option>
+          </select>
 
           <label for="description">Beschreibung</label>
           <textarea id="description" rows="3" placeholder="Was wurde gekauft / wofür war die Ausgabe?"></textarea>
+
+          <label class="check-row" for="recurring">
+            <input id="recurring" type="checkbox" />
+            <span>
+              <strong>Monatlich wiederkehrende Kosten</strong>
+              <small>Fällige Einträge werden automatisch jeden Monat am gleichen Kalendertag angelegt.</small>
+            </span>
+          </label>
 
           <label for="receipt">Kassenzettel / Beleg</label>
           <input id="receipt" type="file" accept="image/*" capture="environment" />
@@ -91,7 +110,11 @@
         <div class="filters compact">
           <input id="searchText" type="search" placeholder="Suchen …" />
           <select id="listCategoryFilter"><option value="">Alle Kategorien</option></select>
-          <select id="listPayerFilter"><option value="">Alle Personen</option></select>
+          <select id="listPayerFilter">
+            <option value="">Alle Personen</option>
+            <option value="Sebastian">Sebastian</option>
+            <option value="Sandra">Sandra</option>
+          </select>
         </div>
         <div id="expenseList" class="expense-list"></div>
       </div>
@@ -99,7 +122,38 @@
 
     <section id="view-report" class="view">
       <div class="card">
-        <h2>Auswertung</h2>
+        <div class="section-head month-head">
+          <div>
+            <h2>Monatsübersicht</h2>
+            <p class="muted">Auf einen Blick sehen, was im gewählten Monat ausgegeben wurde.</p>
+          </div>
+          <button id="currentMonthBtn" class="ghost" type="button">Aktueller Monat</button>
+        </div>
+
+        <label for="monthPicker">Monat</label>
+        <input id="monthPicker" type="month" />
+
+        <div class="month-stats">
+          <div class="stat-card stat-main"><span>Gesamt</span><strong id="monthTotal">0,00 €</strong></div>
+          <div class="stat-card"><span>Sebastian</span><strong id="monthSebastian">0,00 €</strong></div>
+          <div class="stat-card"><span>Sandra</span><strong id="monthSandra">0,00 €</strong></div>
+          <div class="stat-card"><span>Einträge</span><strong id="monthCount">0</strong></div>
+        </div>
+
+        <div class="report-grid">
+          <div>
+            <h3>Nach Kategorie</h3>
+            <div id="monthCategoryBreakdown" class="breakdown"></div>
+          </div>
+          <div>
+            <h3>Ausgaben im Monat</h3>
+            <div id="monthExpenseList" class="month-expense-list"></div>
+          </div>
+        </div>
+
+        <hr />
+        <h2>Zeitraum-Auswertung</h2>
+        <p class="muted">Für einen beliebigen Zeitraum filtern und anschließend als CSV oder PDF exportieren.</p>
         <div class="grid-2">
           <div>
             <label for="reportFrom">Von</label>
@@ -110,7 +164,7 @@
             <input id="reportTo" type="date" />
           </div>
         </div>
-        <button id="thisMonthBtn" class="ghost" type="button">Diesen Monat</button>
+        <button id="thisMonthBtn" class="ghost report-shortcut" type="button">Diesen Monat übernehmen</button>
 
         <div class="total-box">
           <span>Gesamtausgaben</span>
@@ -155,18 +209,18 @@
 
         <hr />
         <h3>Eigene Kategorien</h3>
+        <p class="muted small-margin">Standard: Taschengeld, Schule und Kleidung. Eigene Kategorien bleiben dauerhaft gespeichert.</p>
         <div class="inline-add">
           <input id="newCategory" placeholder="Neue Kategorie" />
           <button id="addCategoryBtn" type="button" class="secondary">Hinzufügen</button>
         </div>
         <div id="categoryChips" class="chips"></div>
 
-        <h3>Personen / Bezahlt von</h3>
-        <div class="inline-add">
-          <input id="newPayer" placeholder="Name hinzufügen" />
-          <button id="addPayerBtn" type="button" class="secondary">Hinzufügen</button>
+        <h3>Bezahlt von</h3>
+        <div class="fixed-payers">
+          <span class="chip">Sebastian</span>
+          <span class="chip">Sandra</span>
         </div>
-        <div id="payerChips" class="chips"></div>
 
         <hr />
         <button id="deleteAllBtn" type="button" class="danger">Alle Daten löschen</button>
