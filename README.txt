@@ -1,51 +1,33 @@
-KOSTEN – EINZELBENUTZER PWA
-===========================
+Aufteilung Ausgaben Stella – PWA Version 3.1
 
-Diese Version braucht keinen Mac und keinen App Store.
+Neu in Version 3.1:
+- Zeitraum-Markierung im Aufenthaltskalender:
+  - Sebastian, Sandra oder Löschen auswählen
+  - Start- und Enddatum festlegen
+  - gesamten Zeitraum mit einem Klick markieren
+  - Zeiträume dürfen auch über Monatsgrenzen gehen
+- Gemeinsamer Monats-PDF-Bericht:
+  - Gesamtausgaben und Anzahl Einträge
+  - Ausgaben getrennt nach Sebastian und Sandra
+  - Differenz, wer im Monat mehr bezahlt hat
+  - Aufteilung nach Kategorien
+  - Aufenthaltstage Sebastian/Sandra inkl. Prozentanteil
+  - nicht zugeordnete Aufenthaltstage
+  - vollständige Ausgabenliste des Monats
+- Cache auf Version 3.1 aktualisiert, damit GitHub-Pages-Updates zuverlässig geladen werden.
 
-Funktionen
-----------
-- Ausgabe mit Betrag, Datum und Kategorie erfassen
-- Feld „Bezahlt von“: vorhandenen Namen auswählen oder neuen Namen direkt eingeben
-- Beschreibung pro Ausgabe
-- Kassenzettel fotografieren oder Bild auswählen
-- Ausgaben durchsuchen und nach Kategorie / Person filtern
-- Auswertung für frei wählbaren Zeitraum
-- Gesamtsumme
-- Aufschlüsselung nach Kategorie und „Bezahlt von“
-- CSV-Export und Teilen über das iOS-Teilen-Menü
-- PDF-Export und Teilen über Mail, WhatsApp, AirDrop usw.
-- Vollständiges JSON-Backup inklusive Belegbildern
-- Backup wiederherstellen
-- Offline-fähig nach Installation
-- Keine Cloud / keine zweite Person / kein Konto nötig
+Bereits aus Version 3 enthalten:
+- Monatlich ODER jährlich wiederkehrende Ausgaben
+- Design-Anpassung oben rechts: Farbstil, Hell/Dunkel/Automatisch, Textgröße
+- Reiter „Aufenthalt“ mit Monatskalender für Sebastian und Sandra
+- Aufenthaltsstatistik in der Monatsübersicht
+- Aufenthaltsdaten im vollständigen Backup
 
-WICHTIG ZUR DATENSPEICHERUNG
-----------------------------
-Die Daten liegen ausschließlich lokal im Browser auf dem jeweiligen Gerät.
-Werden Safari-Websitedaten gelöscht, können auch die App-Daten gelöscht werden.
-Deshalb regelmäßig unter „Daten“ ein vollständiges Backup erstellen.
+Update auf GitHub Pages:
+1. Vorher in der alten App ein vollständiges Backup erstellen.
+2. index.html, app.js, styles.css, service-worker.js und manifest.webmanifest im bestehenden Repository ersetzen.
+3. Commit speichern.
+4. GitHub-Pages-Seite in Safari öffnen und neu laden.
+5. App vom Home-Bildschirm komplett schließen und erneut öffnen.
 
-INSTALLATION AUF DEM IPHONE OHNE MAC
-------------------------------------
-Die Dateien müssen einmal auf einem HTTPS-Webserver liegen. Danach:
-
-1. Die veröffentlichte Adresse in Safari auf dem iPhone öffnen.
-2. Unten auf „Teilen“ tippen.
-3. „Zum Home-Bildschirm“ wählen.
-4. Die App erscheint danach wie eine normale App auf dem iPhone.
-
-EINFACHE HOSTING-MÖGLICHKEITEN
-------------------------------
-A) Netlify Drop (sehr einfach):
-   - Netlify-Konto erstellen.
-   - Den Inhalt dieses Ordners als Website hochladen / deployen.
-   - Die erzeugte HTTPS-Adresse in Safari öffnen.
-
-B) GitHub Pages:
-   - Neues Repository anlegen.
-   - Alle Dateien aus diesem Ordner hochladen.
-   - Pages für den Hauptbranch aktivieren.
-   - Danach die HTTPS-Adresse am iPhone öffnen.
-
-Es werden keine externen Bibliotheken oder Serverdienste benötigt.
+Bestehende Ausgaben, Aufenthaltsdaten und eigene Kategorien bleiben erhalten. Ältere Backups lassen sich weiterhin wiederherstellen.

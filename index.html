@@ -3,27 +3,28 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#111827" />
+  <meta name="theme-color" content="#4f46e5" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="Kosten" />
+  <meta name="apple-mobile-web-app-title" content="Ausgaben Stella" />
   <link rel="apple-touch-icon" href="icons/icon-180.png" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="stylesheet" href="styles.css" />
-  <title>Kosten</title>
+  <title>Aufteilung Ausgaben Stella</title>
 </head>
 <body>
   <header class="topbar">
-    <div>
-      <h1>Kosten</h1>
-      <p>Ausgaben einfach erfassen</p>
+    <h1>Aufteilung Ausgaben Stella</h1>
+    <div class="top-actions">
+      <button id="appearanceBtn" class="icon-button" type="button" aria-label="Optik anpassen" title="Optik anpassen">◐</button>
+      <button id="installBtn" class="ghost hidden" type="button">Installieren</button>
     </div>
-    <button id="installBtn" class="ghost hidden" type="button">Installieren</button>
   </header>
 
   <main class="app-shell">
     <nav class="tabs" aria-label="Navigation">
       <button class="tab active" data-view="entry">Eintragen</button>
+      <button class="tab" data-view="stay">Aufenthalt</button>
       <button class="tab" data-view="list">Ausgaben</button>
       <button class="tab" data-view="report">Übersicht</button>
       <button class="tab" data-view="settings">Daten</button>
@@ -43,30 +44,19 @@
           <input type="hidden" id="expenseId" />
 
           <label for="amount">Betrag *</label>
-          <div class="amount-field">
-            <span>€</span>
-            <input id="amount" inputmode="decimal" autocomplete="off" placeholder="0,00" required />
-          </div>
+          <div class="amount-field"><span>€</span><input id="amount" inputmode="decimal" autocomplete="off" placeholder="0,00" required /></div>
 
           <div class="grid-2">
-            <div>
-              <label for="date">Datum *</label>
-              <input id="date" type="date" required />
-            </div>
+            <div><label for="date">Datum *</label><input id="date" type="date" required /></div>
             <div>
               <label for="category">Kategorie *</label>
-              <select id="category" required>
-                <option value="">Bitte auswählen</option>
-              </select>
+              <select id="category" required><option value="">Bitte auswählen</option></select>
             </div>
           </div>
 
           <div id="newCategoryEntry" class="new-category-box hidden">
             <label for="newCategoryInline">Neue Kategorie</label>
-            <div class="inline-add">
-              <input id="newCategoryInline" placeholder="z. B. Freizeit" />
-              <button id="saveCategoryInlineBtn" type="button" class="secondary">Speichern</button>
-            </div>
+            <div class="inline-add"><input id="newCategoryInline" placeholder="z. B. Freizeit" /><button id="saveCategoryInlineBtn" type="button" class="secondary">Speichern</button></div>
           </div>
 
           <label for="paidBy">Bezahlt von *</label>
@@ -79,13 +69,16 @@
           <label for="description">Beschreibung</label>
           <textarea id="description" rows="3" placeholder="Was wurde gekauft / wofür war die Ausgabe?"></textarea>
 
-          <label class="check-row" for="recurring">
-            <input id="recurring" type="checkbox" />
-            <span>
-              <strong>Monatlich wiederkehrende Kosten</strong>
-              <small>Fällige Einträge werden automatisch jeden Monat am gleichen Kalendertag angelegt.</small>
-            </span>
-          </label>
+          <div class="recurring-options">
+            <label class="check-row" for="recurringMonthly">
+              <input id="recurringMonthly" type="checkbox" />
+              <span><strong>Monatlich wiederkehrende Kosten</strong><small>Wird jeden Monat am gleichen Kalendertag automatisch angelegt.</small></span>
+            </label>
+            <label class="check-row" for="recurringYearly">
+              <input id="recurringYearly" type="checkbox" />
+              <span><strong>Jährlich wiederkehrende Kosten</strong><small>Wird jedes Jahr am gleichen Datum automatisch angelegt.</small></span>
+            </label>
+          </div>
 
           <label for="receipt">Kassenzettel / Beleg</label>
           <input id="receipt" type="file" accept="image/*" capture="environment" />
@@ -99,22 +92,65 @@
       </div>
     </section>
 
+    <section id="view-stay" class="view">
+      <div class="card">
+        <div class="section-head stay-head">
+          <div>
+            <h2>Aufenthalt</h2>
+            <p class="muted">Markiere für jeden Tag, bei welchem Elternteil Stella sich hauptsächlich aufgehalten hat.</p>
+          </div>
+          <button id="stayTodayBtn" class="ghost" type="button">Aktueller Monat</button>
+        </div>
+
+        <div class="calendar-toolbar">
+          <button id="stayPrevMonth" class="icon-button" type="button" aria-label="Vorheriger Monat">‹</button>
+          <input id="stayMonthPicker" type="month" aria-label="Monat auswählen" />
+          <button id="stayNextMonth" class="icon-button" type="button" aria-label="Nächster Monat">›</button>
+        </div>
+
+        <div class="marking-box">
+          <span class="marking-label">Markieren als</span>
+          <div class="segmented" id="stayModeSelector">
+            <button type="button" class="segment active" data-stay-mode="Sebastian"><span class="dot dot-seb"></span>Sebastian</button>
+            <button type="button" class="segment" data-stay-mode="Sandra"><span class="dot dot-san"></span>Sandra</button>
+            <button type="button" class="segment" data-stay-mode="clear">Löschen</button>
+          </div>
+
+          <div class="range-marking">
+            <div>
+              <label for="stayRangeFrom">Zeitraum von</label>
+              <input id="stayRangeFrom" type="date" />
+            </div>
+            <div>
+              <label for="stayRangeTo">bis</label>
+              <input id="stayRangeTo" type="date" />
+            </div>
+            <button id="markStayRangeBtn" class="secondary range-button" type="button">Zeitraum markieren</button>
+          </div>
+          <p class="hint">Der Zeitraum wird mit der oben gewählten Person markiert. Bei „Löschen“ werden die Zuordnungen für den gesamten Zeitraum entfernt.</p>
+        </div>
+
+        <div class="calendar-wrap">
+          <div class="weekday-row"><span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span></div>
+          <div id="stayCalendar" class="calendar-grid" aria-label="Aufenthaltskalender"></div>
+        </div>
+
+        <div class="stay-stats">
+          <div class="stay-stat seb"><span>Sebastian</span><strong id="staySebastianDays">0 Tage</strong></div>
+          <div class="stay-stat san"><span>Sandra</span><strong id="staySandraDays">0 Tage</strong></div>
+          <div class="stay-stat neutral"><span>Nicht zugeordnet</span><strong id="stayUnassignedDays">0 Tage</strong></div>
+        </div>
+        <p class="hint">Tipp: Auswahl oben setzen und anschließend mehrere Tage nacheinander antippen.</p>
+      </div>
+    </section>
+
     <section id="view-list" class="view">
       <div class="card">
-        <div class="section-head">
-          <div>
-            <h2>Ausgaben</h2>
-            <p class="muted" id="listSummary">0 Einträge</p>
-          </div>
-        </div>
+        <div class="section-head"><div><h2>Ausgaben</h2><p class="muted" id="listSummary">0 Einträge</p></div></div>
         <div class="filters compact">
           <input id="searchText" type="search" placeholder="Suchen …" />
           <select id="listCategoryFilter"><option value="">Alle Kategorien</option></select>
-          <select id="listPayerFilter">
-            <option value="">Alle Personen</option>
-            <option value="Sebastian">Sebastian</option>
-            <option value="Sandra">Sandra</option>
-          </select>
+          <select id="listPayerFilter"><option value="">Alle Personen</option><option value="Sebastian">Sebastian</option><option value="Sandra">Sandra</option></select>
         </div>
         <div id="expenseList" class="expense-list"></div>
       </div>
@@ -123,16 +159,17 @@
     <section id="view-report" class="view">
       <div class="card">
         <div class="section-head month-head">
-          <div>
-            <h2>Monatsübersicht</h2>
-            <p class="muted">Auf einen Blick sehen, was im gewählten Monat ausgegeben wurde.</p>
-          </div>
+          <div><h2>Monatsübersicht</h2><p class="muted">Ausgaben und Aufenthalt im gewählten Monat auf einen Blick.</p></div>
           <button id="currentMonthBtn" class="ghost" type="button">Aktueller Monat</button>
         </div>
 
         <label for="monthPicker">Monat</label>
-        <input id="monthPicker" type="month" />
+        <div class="month-picker-row">
+          <input id="monthPicker" type="month" />
+          <button id="exportMonthPdfBtn" class="primary" type="button">Monatsbericht als PDF</button>
+        </div>
 
+        <h3 class="subheading-first">Ausgaben</h3>
         <div class="month-stats">
           <div class="stat-card stat-main"><span>Gesamt</span><strong id="monthTotal">0,00 €</strong></div>
           <div class="stat-card"><span>Sebastian</span><strong id="monthSebastian">0,00 €</strong></div>
@@ -141,52 +178,36 @@
         </div>
 
         <div class="report-grid">
-          <div>
-            <h3>Nach Kategorie</h3>
-            <div id="monthCategoryBreakdown" class="breakdown"></div>
-          </div>
-          <div>
-            <h3>Ausgaben im Monat</h3>
-            <div id="monthExpenseList" class="month-expense-list"></div>
-          </div>
+          <div><h3>Nach Kategorie</h3><div id="monthCategoryBreakdown" class="breakdown"></div></div>
+          <div><h3>Ausgaben im Monat</h3><div id="monthExpenseList" class="month-expense-list"></div></div>
         </div>
+
+        <hr />
+        <h3>Aufenthalt Stella</h3>
+        <div class="stay-overview-grid">
+          <div class="stay-overview-card seb"><span>Bei Sebastian</span><strong id="reportStaySebastian">0 Tage</strong><small id="reportStaySebastianPct">0 %</small></div>
+          <div class="stay-overview-card san"><span>Bei Sandra</span><strong id="reportStaySandra">0 Tage</strong><small id="reportStaySandraPct">0 %</small></div>
+          <div class="stay-overview-card neutral"><span>Nicht zugeordnet</span><strong id="reportStayUnassigned">0 Tage</strong><small>im gewählten Monat</small></div>
+        </div>
+        <div class="stay-ratio" aria-label="Verteilung Aufenthalt"><div id="stayRatioSeb" class="stay-ratio-seb"></div><div id="stayRatioSan" class="stay-ratio-san"></div></div>
 
         <hr />
         <h2>Zeitraum-Auswertung</h2>
         <p class="muted">Für einen beliebigen Zeitraum filtern und anschließend als CSV oder PDF exportieren.</p>
         <div class="grid-2">
-          <div>
-            <label for="reportFrom">Von</label>
-            <input id="reportFrom" type="date" />
-          </div>
-          <div>
-            <label for="reportTo">Bis</label>
-            <input id="reportTo" type="date" />
-          </div>
+          <div><label for="reportFrom">Von</label><input id="reportFrom" type="date" /></div>
+          <div><label for="reportTo">Bis</label><input id="reportTo" type="date" /></div>
         </div>
         <button id="thisMonthBtn" class="ghost report-shortcut" type="button">Diesen Monat übernehmen</button>
 
-        <div class="total-box">
-          <span>Gesamtausgaben</span>
-          <strong id="reportTotal">0,00 €</strong>
-          <small id="reportCount">0 Einträge</small>
-        </div>
+        <div class="total-box"><span>Gesamtausgaben</span><strong id="reportTotal">0,00 €</strong><small id="reportCount">0 Einträge</small></div>
 
         <div class="report-grid">
-          <div>
-            <h3>Nach Kategorie</h3>
-            <div id="categoryBreakdown" class="breakdown"></div>
-          </div>
-          <div>
-            <h3>Bezahlt von</h3>
-            <div id="payerBreakdown" class="breakdown"></div>
-          </div>
+          <div><h3>Nach Kategorie</h3><div id="categoryBreakdown" class="breakdown"></div></div>
+          <div><h3>Bezahlt von</h3><div id="payerBreakdown" class="breakdown"></div></div>
         </div>
 
-        <div class="export-actions">
-          <button id="exportCsvBtn" type="button" class="primary">CSV exportieren / teilen</button>
-          <button id="exportPdfBtn" type="button" class="secondary">PDF exportieren / teilen</button>
-        </div>
+        <div class="export-actions"><button id="exportCsvBtn" type="button" class="primary">CSV exportieren / teilen</button><button id="exportPdfBtn" type="button" class="secondary">PDF exportieren / teilen</button></div>
       </div>
     </section>
 
@@ -194,42 +215,45 @@
       <div class="card">
         <h2>Daten & Sicherung</h2>
         <p class="muted">Alle Daten werden nur auf diesem Gerät im Browser gespeichert. Es gibt keine Cloud-Synchronisierung.</p>
-
-        <div class="notice">
-          <strong>Wichtig:</strong> Wenn Safari-Websitedaten gelöscht werden, können auch die gespeicherten Ausgaben verschwinden. Deshalb regelmäßig ein vollständiges Backup exportieren.
-        </div>
-
-        <div class="settings-actions">
-          <button id="backupBtn" type="button" class="primary">Vollständiges Backup erstellen</button>
-          <label class="file-button secondary">
-            Backup wiederherstellen
-            <input id="restoreInput" type="file" accept="application/json,.json" hidden />
-          </label>
-        </div>
+        <div class="notice"><strong>Wichtig:</strong> Wenn Safari-Websitedaten gelöscht werden, können auch die gespeicherten Daten verschwinden. Deshalb regelmäßig ein vollständiges Backup exportieren.</div>
+        <div class="settings-actions"><button id="backupBtn" type="button" class="primary">Vollständiges Backup erstellen</button><label class="file-button secondary">Backup wiederherstellen<input id="restoreInput" type="file" accept="application/json,.json" hidden /></label></div>
 
         <hr />
         <h3>Eigene Kategorien</h3>
         <p class="muted small-margin">Standard: Taschengeld, Schule und Kleidung. Eigene Kategorien bleiben dauerhaft gespeichert.</p>
-        <div class="inline-add">
-          <input id="newCategory" placeholder="Neue Kategorie" />
-          <button id="addCategoryBtn" type="button" class="secondary">Hinzufügen</button>
-        </div>
+        <div class="inline-add"><input id="newCategory" placeholder="Neue Kategorie" /><button id="addCategoryBtn" type="button" class="secondary">Hinzufügen</button></div>
         <div id="categoryChips" class="chips"></div>
 
         <h3>Bezahlt von</h3>
-        <div class="fixed-payers">
-          <span class="chip">Sebastian</span>
-          <span class="chip">Sandra</span>
-        </div>
+        <div class="fixed-payers"><span class="chip">Sebastian</span><span class="chip">Sandra</span></div>
 
         <hr />
+        <p class="muted version-note">Version 3.1 · Zeitraum-Markierung und gemeinsamer Monats-PDF-Bericht</p>
         <button id="deleteAllBtn" type="button" class="danger">Alle Daten löschen</button>
       </div>
     </section>
   </main>
 
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="appearancePanel" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="appearanceTitle">
+    <div class="appearance-panel">
+      <div class="section-head"><div><h2 id="appearanceTitle">Optik anpassen</h2><p class="muted">Wird dauerhaft auf diesem Gerät gespeichert.</p></div><button id="appearanceCloseBtn" class="icon-button" type="button" aria-label="Schließen">×</button></div>
+      <label>Farbstil</label>
+      <div class="color-presets" id="colorPresets">
+        <button class="color-preset" data-theme="indigo" style="--swatch:#4f46e5" aria-label="Indigo"></button>
+        <button class="color-preset" data-theme="rose" style="--swatch:#be5674" aria-label="Rosé"></button>
+        <button class="color-preset" data-theme="teal" style="--swatch:#0f766e" aria-label="Petrol"></button>
+        <button class="color-preset" data-theme="blue" style="--swatch:#2563eb" aria-label="Blau"></button>
+        <button class="color-preset" data-theme="graphite" style="--swatch:#374151" aria-label="Graphit"></button>
+      </div>
+      <label for="appearanceMode">Darstellung</label>
+      <select id="appearanceMode"><option value="system">Automatisch (iPhone)</option><option value="light">Hell</option><option value="dark">Dunkel</option></select>
+      <label for="textSize">Textgröße</label>
+      <select id="textSize"><option value="normal">Normal</option><option value="large">Etwas größer</option></select>
+      <button id="appearanceDoneBtn" class="primary wide" type="button">Fertig</button>
+    </div>
+  </div>
 
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script src="app.js"></script>
 </body>
 </html>
