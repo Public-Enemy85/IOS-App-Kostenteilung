@@ -14,6 +14,7 @@ let currentStays = [];
 let stayMode = 'Sebastian';
 
 const money = v => new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'}).format(v || 0);
+const fmtDays = v => `${new Intl.NumberFormat('de-DE',{maximumFractionDigits:1}).format(v || 0)} ${Math.abs((v || 0)-1)<0.0001?'Tag':'Tage'}`;
 const fmtDate = iso => iso ? new Intl.DateTimeFormat('de-DE').format(new Date(iso+'T12:00:00')) : '';
 const todayISO = () => {
   const d = new Date();
@@ -242,13 +243,16 @@ function renderList() {
 
 function stayForDate(date) { return currentStays.find(x=>x.date===date) || null; }
 function monthStayStats(month) {
-  if(!month) return {seb:0,san:0,assigned:0,unassigned:0,totalDays:0};
+  if(!month) return {seb:0,san:0,assigned:0,unassigned:0,totalDays:0,both:0};
   const [y,m]=month.split('-').map(Number), totalDays=daysInMonth(y,m-1);
   const rows=currentStays.filter(x=>x.date?.slice(0,7)===month);
-  const seb=rows.filter(x=>x.parent==='Sebastian').length;
-  const san=rows.filter(x=>x.parent==='Sandra').length;
-  const assigned=seb+san;
-  return {seb,san,assigned,unassigned:Math.max(0,totalDays-assigned),totalDays};
+  const sebOnly=rows.filter(x=>x.parent==='Sebastian').length;
+  const sanOnly=rows.filter(x=>x.parent==='Sandra').length;
+  const both=rows.filter(x=>x.parent==='Beide').length;
+  const seb=sebOnly+(both*0.5);
+  const san=sanOnly+(both*0.5);
+  const assigned=rows.filter(x=>['Sebastian','Sandra','Beide'].includes(x.parent)).length;
+  return {seb,san,assigned,unassigned:Math.max(0,totalDays-assigned),totalDays,both};
 }
 function renderStayCalendar() {
   const month=el('stayMonthPicker').value || currentMonthISO();
@@ -261,17 +265,18 @@ function renderStayCalendar() {
   for(let d=1;d<=total;d++){
     const date=`${month}-${String(d).padStart(2,'0')}`;
     const stay=stayForDate(date);
-    const cls=stay?.parent==='Sebastian'?' assigned-seb':(stay?.parent==='Sandra'?' assigned-san':'');
+    const cls=stay?.parent==='Sebastian'?' assigned-seb':(stay?.parent==='Sandra'?' assigned-san':(stay?.parent==='Beide'?' assigned-both':''));
     const today=date===todayISO()?' today':'';
-    const label=stay?.parent?`<span class="day-parent">${escapeHtml(stay.parent)}</span>`:'';
-    parts.push(`<button class="calendar-day${cls}${today}" type="button" data-stay-date="${date}" aria-label="${fmtDate(date)}${stay?.parent?' '+escapeHtml(stay.parent):''}"><span class="day-number">${d}</span>${label}</button>`);
+    const displayParent=stay?.parent==='Beide'?'½ Sebastian · ½ Sandra':stay?.parent;
+    const label=displayParent?`<span class="day-parent">${escapeHtml(displayParent)}</span>`:'';
+    parts.push(`<button class="calendar-day${cls}${today}" type="button" data-stay-date="${date}" aria-label="${fmtDate(date)}${displayParent?' '+escapeHtml(displayParent):''}"><span class="day-number">${d}</span>${label}</button>`);
   }
   while(parts.length%7!==0) parts.push('<button class="calendar-day empty-day" type="button" tabindex="-1"></button>');
   el('stayCalendar').innerHTML=parts.join('');
   const s=monthStayStats(month);
-  el('staySebastianDays').textContent=`${s.seb} ${s.seb===1?'Tag':'Tage'}`;
-  el('staySandraDays').textContent=`${s.san} ${s.san===1?'Tag':'Tage'}`;
-  el('stayUnassignedDays').textContent=`${s.unassigned} ${s.unassigned===1?'Tag':'Tage'}`;
+  el('staySebastianDays').textContent=fmtDays(s.seb);
+  el('staySandraDays').textContent=fmtDays(s.san);
+  el('stayUnassignedDays').textContent=fmtDays(s.unassigned);
 }
 async function markStay(date) {
   if(stayMode==='clear') await stayDelete(date);
@@ -313,7 +318,7 @@ async function markStayRange() {
   if(from.slice(0,7)===to.slice(0,7)) el('stayMonthPicker').value=from.slice(0,7);
   renderStayCalendar();
   renderMonthOverview();
-  const action=stayMode==='clear'?'gelöscht':`als ${stayMode} markiert`;
+  const action=stayMode==='clear'?'gelöscht':(stayMode==='Beide'?'mit je ½ Tag für Sebastian und Sandra markiert':`als ${stayMode} markiert`);
   toast(`${dates.length} ${dates.length===1?'Tag':'Tage'} ${action}.`);
 }
 function shiftStayMonth(delta) {
@@ -364,9 +369,9 @@ function renderMonthOverview() {
     : '<div class="muted">Keine Ausgaben in diesem Monat.</div>';
 
   const s=monthStayStats(month);
-  el('reportStaySebastian').textContent=`${s.seb} ${s.seb===1?'Tag':'Tage'}`;
-  el('reportStaySandra').textContent=`${s.san} ${s.san===1?'Tag':'Tage'}`;
-  el('reportStayUnassigned').textContent=`${s.unassigned} ${s.unassigned===1?'Tag':'Tage'}`;
+  el('reportStaySebastian').textContent=fmtDays(s.seb);
+  el('reportStaySandra').textContent=fmtDays(s.san);
+  el('reportStayUnassigned').textContent=fmtDays(s.unassigned);
   const sebPct=s.assigned?Math.round(s.seb/s.assigned*100):0, sanPct=s.assigned?100-sebPct:0;
   el('reportStaySebastianPct').textContent=`${sebPct} % der zugeordneten Tage`;
   el('reportStaySandraPct').textContent=`${sanPct} % der zugeordneten Tage`;
@@ -390,7 +395,12 @@ function pdfEscape(s) { return String(s).replace(/\\/g,'\\\\').replace(/\(/g,'\\
 function truncate(s,n=72) { s=String(s||'').replace(/\s+/g,' ').trim(); return s.length>n?s.slice(0,n-1)+'…':s; }
 function stayRangeStats(from,to) {
   const rows=currentStays.filter(x=>(!from||x.date>=from)&&(!to||x.date<=to));
-  return {seb:rows.filter(x=>x.parent==='Sebastian').length,san:rows.filter(x=>x.parent==='Sandra').length};
+  const both=rows.filter(x=>x.parent==='Beide').length;
+  return {
+    seb:rows.filter(x=>x.parent==='Sebastian').length+(both*0.5),
+    san:rows.filter(x=>x.parent==='Sandra').length+(both*0.5),
+    both
+  };
 }
 function simplePdf(lines) {
   const perPage=46, pages=[];
@@ -430,7 +440,7 @@ function buildPdf(items,from,to) {
   lines.push(`Zeitraum: ${from?fmtDate(from):'Beginn'} bis ${to?fmtDate(to):'Heute'}`);
   lines.push(`Gesamt: ${money(items.reduce((s,x)=>s+x.amount,0))} | Einträge: ${items.length}`);
   const stay=stayRangeStats(from,to);
-  if(stay.seb||stay.san) lines.push(`Aufenthalt: Sebastian ${stay.seb} Tage | Sandra ${stay.san} Tage`);
+  if(stay.seb||stay.san) lines.push(`Aufenthalt: Sebastian ${fmtDays(stay.seb)} | Sandra ${fmtDays(stay.san)}`);
   lines.push('');
   items.forEach(x=>{
     const f=getRecurringFrequency(x), tag=f==='yearly'?' [jährlich]':(f==='monthly'?' [monatlich]':'');
@@ -471,9 +481,10 @@ function buildMonthPdf(month) {
   if(catRows.length) catRows.forEach(([n,v])=>lines.push(`  ${truncate(n,45)}: ${money(v)}`)); else lines.push('  Keine Ausgaben.');
   lines.push('');
   lines.push('AUFENTHALT');
-  lines.push(`Sebastian: ${stay.seb} Tage (${sebPct} % der zugeordneten Tage)`);
-  lines.push(`Sandra: ${stay.san} Tage (${sanPct} % der zugeordneten Tage)`);
-  lines.push(`Nicht zugeordnet: ${stay.unassigned} Tage | Monat gesamt: ${stay.totalDays} Tage`);
+  lines.push(`Sebastian: ${fmtDays(stay.seb)} (${sebPct} % der zugeordneten Tage)`);
+  lines.push(`Sandra: ${fmtDays(stay.san)} (${sanPct} % der zugeordneten Tage)`);
+  if(stay.both) lines.push(`Davon gemeinsam aufgeteilt: ${fmtDays(stay.both)} (jeweils ½ Tag)`);
+  lines.push(`Nicht zugeordnet: ${fmtDays(stay.unassigned)} | Monat gesamt: ${fmtDays(stay.totalDays)}`);
   lines.push('');
   lines.push('AUSGABEN IM MONAT');
   if(items.length){
@@ -524,7 +535,7 @@ async function createBackup() {
   const items=[];
   for(const x of currentExpenses) items.push({...x,receipt:x.receipt?await blobToDataURL(x.receipt):null});
   const payload={
-    format:'KostenEinfachBackup',version:3,createdAt:new Date().toISOString(),
+    format:'KostenEinfachBackup',version:4,createdAt:new Date().toISOString(),
     customCategories:loadList('customCategories'),expenses:items,stays:currentStays,appearance:getAppearance()
   };
   const file=new File([JSON.stringify(payload,null,2)],`Stella_Backup_${todayISO()}.json`,{type:'application/json'});
@@ -537,7 +548,7 @@ async function restoreBackup(file) {
   if(!confirm(`Backup mit ${payload.expenses.length} Ausgaben${stayCount?` und ${stayCount} Aufenthaltstagen`:''} wiederherstellen? Vorhandene Daten werden ersetzt.`)) return;
   await dbClear(); await stayClear();
   for(const raw of payload.expenses) await dbPut({...raw,receipt:raw.receipt?dataURLToBlob(raw.receipt):null});
-  for(const s of (payload.stays||[])) if(s.date && FIXED_PAYERS.includes(s.parent)) await stayPut(s);
+  for(const s of (payload.stays||[])) if(s.date && [...FIXED_PAYERS,'Beide'].includes(s.parent)) await stayPut(s);
   saveList('customCategories',payload.customCategories||[]);
   if(payload.appearance){
     if(payload.appearance.theme) localStorage.setItem('appearanceTheme',payload.appearance.theme);

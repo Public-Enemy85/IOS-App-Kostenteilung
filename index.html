@@ -97,7 +97,7 @@
         <div class="section-head stay-head">
           <div>
             <h2>Aufenthalt</h2>
-            <p class="muted">Markiere für jeden Tag, bei welchem Elternteil Stella sich hauptsächlich aufgehalten hat.</p>
+            <p class="muted">Markiere für jeden Tag, bei welchem Elternteil Stella sich aufgehalten hat. Ein Tag kann auch hälftig Sebastian und Sandra zugeordnet werden.</p>
           </div>
           <button id="stayTodayBtn" class="ghost" type="button">Aktueller Monat</button>
         </div>
@@ -113,6 +113,7 @@
           <div class="segmented" id="stayModeSelector">
             <button type="button" class="segment active" data-stay-mode="Sebastian"><span class="dot dot-seb"></span>Sebastian</button>
             <button type="button" class="segment" data-stay-mode="Sandra"><span class="dot dot-san"></span>Sandra</button>
+            <button type="button" class="segment" data-stay-mode="Beide"><span class="dot dot-both"></span>Beide ½ / ½</button>
             <button type="button" class="segment" data-stay-mode="clear">Löschen</button>
           </div>
 
@@ -127,7 +128,7 @@
             </div>
             <button id="markStayRangeBtn" class="secondary range-button" type="button">Zeitraum markieren</button>
           </div>
-          <p class="hint">Der Zeitraum wird mit der oben gewählten Person markiert. Bei „Löschen“ werden die Zuordnungen für den gesamten Zeitraum entfernt.</p>
+          <p class="hint">Der Zeitraum wird mit der oben gewählten Auswahl markiert. „Beide ½ / ½“ zählt jeden markierten Tag mit 0,5 Tag für Sebastian und 0,5 Tag für Sandra. Bei „Löschen“ werden die Zuordnungen entfernt.</p>
         </div>
 
         <div class="calendar-wrap">
@@ -140,7 +141,7 @@
           <div class="stay-stat san"><span>Sandra</span><strong id="staySandraDays">0 Tage</strong></div>
           <div class="stay-stat neutral"><span>Nicht zugeordnet</span><strong id="stayUnassignedDays">0 Tage</strong></div>
         </div>
-        <p class="hint">Tipp: Auswahl oben setzen und anschließend mehrere Tage nacheinander antippen.</p>
+        <p class="hint">Tipp: Für einen geteilten Tag „Beide ½ / ½“ auswählen. Dieser Tag wird in allen Auswertungen mit je 0,5 Tag für Sebastian und Sandra gerechnet.</p>
       </div>
     </section>
 
@@ -228,7 +229,7 @@
         <div class="fixed-payers"><span class="chip">Sebastian</span><span class="chip">Sandra</span></div>
 
         <hr />
-        <p class="muted version-note">Version 3.1 · Zeitraum-Markierung und gemeinsamer Monats-PDF-Bericht</p>
+        <p class="muted version-note">Version 3.2 · Geteilte Aufenthaltstage (½ Sebastian / ½ Sandra)</p>
         <button id="deleteAllBtn" type="button" class="danger">Alle Daten löschen</button>
       </div>
     </section>
