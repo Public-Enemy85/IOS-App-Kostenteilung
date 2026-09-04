@@ -1,27 +1,22 @@
-Aufteilung Ausgaben Stella – PWA Version 3.1
+Aufteilung Ausgaben Stella – PWA Version 3.2
 
-Neu in Version 3.1:
-- Zeitraum-Markierung im Aufenthaltskalender:
-  - Sebastian, Sandra oder Löschen auswählen
-  - Start- und Enddatum festlegen
-  - gesamten Zeitraum mit einem Klick markieren
-  - Zeiträume dürfen auch über Monatsgrenzen gehen
-- Gemeinsamer Monats-PDF-Bericht:
-  - Gesamtausgaben und Anzahl Einträge
-  - Ausgaben getrennt nach Sebastian und Sandra
-  - Differenz, wer im Monat mehr bezahlt hat
-  - Aufteilung nach Kategorien
-  - Aufenthaltstage Sebastian/Sandra inkl. Prozentanteil
-  - nicht zugeordnete Aufenthaltstage
-  - vollständige Ausgabenliste des Monats
-- Cache auf Version 3.1 aktualisiert, damit GitHub-Pages-Updates zuverlässig geladen werden.
+Neu in Version 3.2:
+- Geteilte Aufenthaltstage:
+  - Im Reiter „Aufenthalt“ gibt es jetzt zusätzlich „Beide ½ / ½“.
+  - Ein so markierter Kalendertag zählt automatisch als 0,5 Tag für Sebastian und 0,5 Tag für Sandra.
+  - Die Funktion gilt sowohl beim einzelnen Antippen eines Tages als auch bei der Zeitraum-Markierung.
+  - Geteilte Tage werden im Kalender zweifarbig dargestellt.
+  - Monatsübersicht, Zeitraum-Auswertung und Monats-PDF rechnen automatisch mit halben Tagen.
+  - Backup und Wiederherstellung unterstützen die neue Zuordnung.
+- Cache auf Version 3.2 aktualisiert.
 
-Bereits aus Version 3 enthalten:
-- Monatlich ODER jährlich wiederkehrende Ausgaben
-- Design-Anpassung oben rechts: Farbstil, Hell/Dunkel/Automatisch, Textgröße
-- Reiter „Aufenthalt“ mit Monatskalender für Sebastian und Sandra
-- Aufenthaltsstatistik in der Monatsübersicht
-- Aufenthaltsdaten im vollständigen Backup
+Bereits enthalten:
+- Monatlich oder jährlich wiederkehrende Ausgaben
+- Design-Anpassung
+- Aufenthaltskalender mit Zeitraum-Markierung
+- Monatsübersicht mit Ausgaben und Aufenthalt
+- Gemeinsamer Monats-PDF-Bericht
+- Vollständiges lokales Backup
 
 Update auf GitHub Pages:
 1. Vorher in der alten App ein vollständiges Backup erstellen.
@@ -30,4 +25,4 @@ Update auf GitHub Pages:
 4. GitHub-Pages-Seite in Safari öffnen und neu laden.
 5. App vom Home-Bildschirm komplett schließen und erneut öffnen.
 
-Bestehende Ausgaben, Aufenthaltsdaten und eigene Kategorien bleiben erhalten. Ältere Backups lassen sich weiterhin wiederherstellen.
+Bestehende Ausgaben und Aufenthaltsdaten bleiben erhalten. Ältere Backups lassen sich weiterhin wiederherstellen.
